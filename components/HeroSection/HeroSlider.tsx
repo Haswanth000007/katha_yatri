@@ -3,10 +3,10 @@
 import { Button, Typography, Divider, IconButton } from '@mui/material';
 import Image from 'next/image';
 import { ArrowLeft, ArrowRight } from '@mui/icons-material';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface HeroSlide {
-    image: string;
+    images: string[]; // Array of images for this slide
     title: string;
     subtitles: string[];
     topLeftText: string;
@@ -17,20 +17,49 @@ interface HeroSlide {
 
 interface HeroSliderProps {
     slides: HeroSlide[];
+    imageChangeInterval?: number; // Optional interval in milliseconds (default: 3000)
 }
 
-export default function HeroSlider({ slides }: HeroSliderProps) {
+export default function HeroSlider({ slides, imageChangeInterval = 3000 }: HeroSliderProps) {
     const [currentSlide, setCurrentSlide] = useState<number>(0);
-
-    const nextSlide = () => {
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
-    };
-
-    const prevSlide = () => {
-        setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-    };
+    const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+    const [transitionDirection, setTransitionDirection] = useState<'up' | 'down'>('up');
 
     const slide = slides[currentSlide];
+
+    // Handle slide navigation
+    const nextSlide = useCallback(() => {
+        setCurrentSlide((prev) => (prev + 1) % slides.length);
+        setCurrentImageIndex(0); // Reset image index when changing slides
+    }, [slides.length]);
+
+    const prevSlide = useCallback(() => {
+        setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+        setCurrentImageIndex(0); // Reset image index when changing slides
+    }, [slides.length]);
+
+    // Auto-rotate images for the current slide
+    useEffect(() => {
+        if (slide.images.length <= 1) return; // No need to rotate if only one image
+
+        const interval = setInterval(() => {
+            setTransitionDirection('up');
+            setCurrentImageIndex((prev) => (prev + 1) % slide.images.length);
+        }, imageChangeInterval);
+
+        return () => clearInterval(interval);
+    }, [slide.images.length, imageChangeInterval]);
+
+    // Handle manual image navigation (optional)
+    const nextImage = () => {
+        setTransitionDirection('up');
+        setCurrentImageIndex((prev) => (prev + 1) % slide.images.length);
+    };
+
+    const prevImage = () => {
+        setTransitionDirection('down');
+        setCurrentImageIndex((prev) => (prev - 1 + slide.images.length) % slide.images.length);
+    };
 
     return (
         <div className="relative w-[96%] h-[94vh] overflow-hidden mx-auto flex justify-center">
@@ -71,18 +100,25 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                 <ArrowRight fontSize="large" />
             </IconButton>
 
-            {/* Background Image */}
-            <div className="absolute inset-0 z-0 px-8 md:px-16 lg:px-24 bg-opacity-50">
-                <Image
-                    src={slide.image}
-                    alt={slide.title}
-                    fill
-                    style={{ objectFit: "cover", objectPosition: "center" }}
-                    priority
-                />
+            {/* Background Images Container */}
+            <div className="absolute inset-0 z-0 px-8 md:px-16 lg:px-24 overflow-hidden">
+                {slide.images.map((image, index) => (
+                    <div
+                        key={index}
+                        className={`absolute inset-0 transition-all duration-2000 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'} ${index === currentImageIndex ? 'translate-y-0' : transitionDirection === 'down' ? 'translate-y-full' : '-translate-y-full'}`}
+                    >
+                        <Image
+                            src={image}
+                            alt={`${slide.title} ${index + 1}`}
+                            fill
+                            style={{ objectFit: "cover", objectPosition: "center" }}
+                            priority
+                        />
+                    </div>
+                ))}
             </div>
 
-            {/* Content */}
+            {/* Content (unchanged from your original) */}
             <div className="relative z-10 flex flex-col items-center justify-center h-full w-full text-white px-8 md:px-16 lg:px-24 gap-4">
                 {/* First row - Top texts */}
                 <div className="w-full flex flex-col absolute top-8 md:top-12 left-0 px-8 md:px-16 lg:px-24">
@@ -136,7 +172,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                     </Typography>
 
                     {/* Bullet points */}
-                    <div className="flex flex-col md:flex-row j ustify-center gap-4 md:gap-8 lg:gap-12 mb-8">
+                    <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-8 lg:gap-12 mb-8">
                         {slide.subtitles.map((subtitle, index) => (
                             <div key={index} className="text-center">
                                 <Typography variant="h4">{subtitle}</Typography>

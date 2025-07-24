@@ -6,7 +6,7 @@ import HeroSlider from './HeroSlider';
 export default function HeroSection() {
     const slides = [
         {
-            image: '/images/faith.webp',
+            images: ['/images/faith.webp', '/images/trip-image.jpg', '/images/wildlife.webp'],
             title: 'Katha Yatri',
             subtitles: [
                 'Temples, Masjid',
@@ -19,7 +19,7 @@ export default function HeroSection() {
             ctaText: 'View Collection'
         },
         {
-            image: '/images/trip-image.jpg',
+            images: ['/images/trip-image.jpg'],
             title: 'Katha Yatri',
             subtitles: [
                 'ladakh Lunar',
@@ -33,7 +33,7 @@ export default function HeroSection() {
             ctaText: 'View Collection'
         },
         {
-            image: '/images/wildlife.webp',
+            images: ['/images/wildlife.webp'],
             title: 'Katha Yatri',
             subtitles: [
                 'Mountains'
@@ -44,7 +44,7 @@ export default function HeroSection() {
             ctaText: 'View Collection'
         },
         {
-            image: '/images/fort.jpg',
+            images: ['/images/fort.jpg'],
             title: 'Katha Yatri',
             subtitles: [
                 'Taj Mahal',
@@ -57,7 +57,7 @@ export default function HeroSection() {
             ctaText: 'View Collection'
         },
         {
-            image: '/images/humpi.jpg',
+            images: ['/images/humpi.jpg'],
             title: 'Katha Yatri',
             subtitles: [
                 'Humbliing Hampi',
@@ -69,7 +69,7 @@ export default function HeroSection() {
             ctaText: 'View Collection'
         },
         {
-            image: '/images/food.jpg',
+            images: ['/images/food.jpg'],
             title: 'Katha Yatri',
             subtitles: [
                 'Delicious Food',
@@ -80,7 +80,7 @@ export default function HeroSection() {
             ctaText: 'View Collection'
         },
         {
-            image: '/images/cities.jpg',
+            images: ['/images/cities.jpg'],
             title: 'Katha Yatri',
             subtitles: [
                 'Magical Cities',
@@ -91,7 +91,7 @@ export default function HeroSection() {
             ctaText: 'View Collection'
         },
         {
-            image: '/images/hills.jpeg',
+            images: ['/images/hills.jpeg'],
             title: 'Katha Yatri',
             subtitles: [
                 'Indias Hill stations',
