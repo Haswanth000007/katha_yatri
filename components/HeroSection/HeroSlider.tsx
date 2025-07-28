@@ -102,20 +102,44 @@ export default function HeroSlider({ slides, imageChangeInterval = 3000 }: HeroS
 
             {/* Background Images Container */}
             <div className="absolute inset-0 z-0 px-8 md:px-16 lg:px-24 overflow-hidden">
-                {slide.images.map((image, index) => (
-                    <div
-                        key={index}
-                        className={`absolute inset-0 transition-all duration-2000 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'} ${index === currentImageIndex ? 'translate-y-0' : transitionDirection === 'down' ? 'translate-y-full' : '-translate-y-full'}`}
-                    >
-                        <Image
-                            src={image}
-                            alt={`${slide.title} ${index + 1}`}
-                            fill
-                            style={{ objectFit: "cover", objectPosition: "center" }}
-                            priority
-                        />
-                    </div>
-                ))}
+                {slide.images.map((image, index) => {
+                    const isActive = index === currentImageIndex;
+                    const isNext = index === (currentImageIndex + 1) % slide.images.length;
+                    const isPrevious = index === (currentImageIndex - 1 + slide.images.length) % slide.images.length;
+
+                    return (
+                        <div
+                            key={index}
+                            className={`absolute inset-0 transition-all duration-2000 ease-[cubic-bezier(0.65,0,0.35,1)] ${isActive
+                                ? 'opacity-100 clip-path-[inset(0%_0_0%_0)]' // Fully visible
+                                : isNext
+                                    ? 'opacity-100 clip-path-[inset(0%_0_100%_0)]' // Waiting to enter (hidden at bottom)
+                                    : 'opacity-100 clip-path-[inset(100%_0_0%_0)]' // Exiting (revealing from top)
+                                }`}
+                            style={{
+                                transitionProperty: 'clip-path, opacity',
+                                willChange: 'clip-path, opacity',
+                                clipPath: isActive
+                                    ? 'inset(0% 0 0% 0)' // Fully visible
+                                    : isNext
+                                        ? 'inset(0% 0 100% 0)' // New image starts hidden at bottom
+                                        : 'inset(100% 0 0% 0)' // Old image exits from top
+                            }}
+                        >
+                            <Image
+                                src={image}
+                                alt={`${slide.title} ${index + 1}`}
+                                fill
+                                style={{
+                                    objectFit: "cover",
+                                    objectPosition: "center",
+                                }}
+                                priority={isActive}
+                            />
+                            <div className="absolute inset-0 bg-opacity-30" />
+                        </div>
+                    );
+                })}
             </div>
 
             {/* Content (unchanged from your original) */}
@@ -123,10 +147,16 @@ export default function HeroSlider({ slides, imageChangeInterval = 3000 }: HeroS
                 {/* First row - Top texts */}
                 <div className="w-full flex flex-col absolute top-8 md:top-12 left-0 px-8 md:px-16 lg:px-24">
                     <div className="flex justify-between w-full">
-                        <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                        <Typography variant="h5" sx={{
+                            fontWeight: 700,
+                            fontFamily: "'Aller', sans-serif" // Aller Bold for topLeftText
+                        }}>
                             {slide.topLeftText}
                         </Typography>
-                        <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                        <Typography variant="h5" sx={{
+                            fontWeight: 700,
+                            fontFamily: "'Mue Sans', sans-serif" // Mue Sans for topRightText
+                        }}>
                             {slide.topRightText}
                         </Typography>
                     </div>
@@ -146,7 +176,10 @@ export default function HeroSlider({ slides, imageChangeInterval = 3000 }: HeroS
                         variant="h3"
                         component="h2"
                         className="text-4xl md:text-6xl font-black tracking-tight"
-                        sx={{ fontWeight: 800 }}
+                        sx={{
+                            fontWeight: 800,
+                            fontFamily: "'Bebas Neue', sans-serif" // Bebas Neue for title
+                        }}
                     >
                         {slide.title}
                     </Typography>
@@ -167,6 +200,9 @@ export default function HeroSlider({ slides, imageChangeInterval = 3000 }: HeroS
                         variant="h1"
                         component="h1"
                         className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
+                        sx={{
+                            fontFamily: "'Mue Sans', sans-serif" // Mue Sans for mainHeading
+                        }}
                     >
                         {slide.mainHeading}
                     </Typography>
@@ -175,7 +211,9 @@ export default function HeroSlider({ slides, imageChangeInterval = 3000 }: HeroS
                     <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-8 lg:gap-12 mb-8">
                         {slide.subtitles.map((subtitle, index) => (
                             <div key={index} className="text-center">
-                                <Typography variant="h4">{subtitle}</Typography>
+                                <Typography variant="h4" sx={{
+                                    fontFamily: "'Mue Sans', sans-serif" // Mue Sans for subtitles
+                                }}>{subtitle}</Typography>
                             </div>
                         ))}
                     </div>
@@ -193,6 +231,7 @@ export default function HeroSlider({ slides, imageChangeInterval = 3000 }: HeroS
                             fontWeight: 600,
                             fontSize: '1rem',
                             backgroundColor: '#E63946',
+                            fontFamily: "'Mue Sans', sans-serif",
                             '&:hover': {
                                 backgroundColor: '#d62839',
                             },
