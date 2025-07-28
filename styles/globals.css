@@ -98,24 +98,3 @@ body {
   color: var(--foreground);
   font-family: 'Roboto', 'Manrope', 'Aller', 'Bebas Neue', 'Mueso Sans', sans-serif;
 }
-
-@supports not (clip-path: inset(0% 0 0% 0)) {
-
-  /* Fallback for browsers that don't support inset() */
-  .clip-path-fallback {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .clip-path-fallback::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    background: inherit;
-    transform: translateY(var(--clip-percent, 0));
-    transition: transform 3s cubic-bezier(0.65, 0, 0.35, 1);
-  }
-}

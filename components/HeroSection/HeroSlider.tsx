@@ -105,38 +105,53 @@ export default function HeroSlider({ slides, imageChangeInterval = 3000 }: HeroS
                 {slide.images.map((image, index) => {
                     const isActive = index === currentImageIndex;
                     const isNext = index === (currentImageIndex + 1) % slide.images.length;
-                    const isPrevious = index === (currentImageIndex - 1 + slide.images.length) % slide.images.length;
 
                     return (
                         <div
                             key={index}
-                            className={`absolute inset-0 transition-all duration-2000 ease-[cubic-bezier(0.65,0,0.35,1)] ${isActive
-                                ? 'opacity-100 clip-path-[inset(0%_0_0%_0)]' // Fully visible
-                                : isNext
-                                    ? 'opacity-100 clip-path-[inset(0%_0_100%_0)]' // Waiting to enter (hidden at bottom)
-                                    : 'opacity-100 clip-path-[inset(100%_0_0%_0)]' // Exiting (revealing from top)
-                                }`}
-                            style={{
-                                transitionProperty: 'clip-path, opacity',
-                                willChange: 'clip-path, opacity',
-                                clipPath: isActive
-                                    ? 'inset(0% 0 0% 0)' // Fully visible
-                                    : isNext
-                                        ? 'inset(0% 0 100% 0)' // New image starts hidden at bottom
-                                        : 'inset(100% 0 0% 0)' // Old image exits from top
-                            }}
+                            className={`absolute inset-0 ${isActive ? 'z-10' : 'z-0'}`}
                         >
-                            <Image
-                                src={image}
-                                alt={`${slide.title} ${index + 1}`}
-                                fill
+                            <div
+                                className={`absolute inset-0 ${isActive ? 'opacity-100' : 'opacity-0'}`}
                                 style={{
-                                    objectFit: "cover",
-                                    objectPosition: "center",
+                                    transition: 'opacity 1s ease-in-out',
+                                    willChange: 'opacity'
                                 }}
-                                priority={isActive}
-                            />
-                            <div className="absolute inset-0 bg-opacity-30" />
+                            >
+                                <Image
+                                    src={image}
+                                    alt={`${slide.title} ${index + 1}`}
+                                    fill
+                                    style={{
+                                        objectFit: "cover",
+                                        objectPosition: "center",
+                                    }}
+                                    priority={isActive}
+                                />
+                            </div>
+
+                            {/* New image sliding down from top */}
+                            {isNext && (
+                                <div
+                                    className="absolute inset-0 z-20"
+                                    style={{
+                                        transform: `translateY(${isActive ? '0%' : '-100%'})`,
+                                        transition: 'transform 11.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                                        willChange: 'transform',
+                                        opacity: isActive ? 1 : 0.8
+                                    }}
+                                >
+                                    <Image
+                                        src={slide.images[(currentImageIndex + 1) % slide.images.length]}
+                                        alt={`${slide.title} next`}
+                                        fill
+                                        style={{
+                                            objectFit: "cover",
+                                            objectPosition: "center",
+                                        }}
+                                    />
+                                </div>
+                            )}
                         </div>
                     );
                 })}
@@ -148,14 +163,17 @@ export default function HeroSlider({ slides, imageChangeInterval = 3000 }: HeroS
                 <div className="w-full flex flex-col absolute top-8 md:top-12 left-0 px-8 md:px-16 lg:px-24">
                     <div className="flex justify-between w-full">
                         <Typography variant="h5" sx={{
-                            fontWeight: 700,
-                            fontFamily: "'Aller', sans-serif" // Aller Bold for topLeftText
+                            fontWeight: 800,
+                            fontFamily: "'Aller', sans-serif", // Aller Bold for topLeftText
+                            textTransform: 'capitalize',
                         }}>
                             {slide.topLeftText}
                         </Typography>
                         <Typography variant="h5" sx={{
-                            fontWeight: 700,
+                            fontWeight: 800,
                             fontFamily: "'Mue Sans', sans-serif" // Mue Sans for topRightText
+                            ,
+                            textTransform: 'capitalize',
                         }}>
                             {slide.topRightText}
                         </Typography>
