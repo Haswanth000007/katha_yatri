@@ -2,7 +2,17 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Typography, Button, Divider } from '@mui/material';
 
-interface Slide {
+export interface CollectionProps {
+    images: string[];
+    names: string[];
+    mainHeading: string;
+    exploreContent: string[];
+    packageDetails: string[];
+    priceValue: string;
+    booking: string;
+}
+
+export interface Slide {
     images: string[];
     topLeftText: string;
     topRightText: string;
@@ -10,18 +20,21 @@ interface Slide {
     mainHeading: string;
     subtitles: string[];
     ctaText: string;
+    collectionProps?: CollectionProps; // Optional property
 }
 
 interface HeroSliderProps {
     slides: Slide[];
     imageChangeInterval?: number;
     slideGap?: number; // Gap between slides in pixels
+    onCtaClick?: (slideData: Slide, slideIndex: number) => void;
 }
 
 export default function HeroSlider({
     slides,
     imageChangeInterval = 3000,
-    slideGap = 40
+    slideGap = 40,
+    onCtaClick,
 }: HeroSliderProps) {
     const [currentImageIndices, setCurrentImageIndices] = useState<number[]>(
         Array(slides.length).fill(0)
@@ -174,6 +187,7 @@ export default function HeroSlider({
                                     variant="contained"
                                     color="error"
                                     size="large"
+                                    onClick={() => onCtaClick?.(slide, slideIndex)}
                                     sx={{
                                         borderRadius: '9999px',
                                         paddingX: 4,
